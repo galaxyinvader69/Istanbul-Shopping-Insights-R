@@ -1,0 +1,561 @@
+---
+title: "R - Final Project"
+author: "Third Team"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    code_folding: hide
+    number_sections: false
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+---
+```{r init, include=FALSE}
+# some of common options (and the defaults) are: 
+# include=T, eval=T, echo=T, results='hide'/'asis'/'markup',..., collapse=F, warning=T, message=T, error=T, cache=T, fig.width=6, fig.height=4, fig.dim=c(6,4) #inches, fig.align='left'/'center','right', 
+# knitr::opts_chunk$set(warning = F, results = "markup", message = F)
+knitr::opts_chunk$set(warning = F, results = "markup", message = F)
+options(scientific=T, digits = 3) 
+# options(scipen=9, digits = 3) 
+# ‘scipen’: integer. A penalty to be applied when deciding to print numeric values in fixed or exponential notation.  Positive values bias towards fixed and negative towards scientific notation: fixed notation will be preferblue unless it is more than ‘scipen’ digits wider.
+# use scipen=999 to prevent scientific notation at all times
+```
+# 1 Introduction
+```{r}
+#The Istanbul Shopping Dataset is a rich collection of 99,458 records spanning the years 2021 to 2023, sourced from ten malls in Istanbul. The dataset includes information such as invoice numbers, client IDs, demographics, payment methods, and product details. This comprehensive dataset serves as a valuable resource, offering insights into consumer behavior and decision-making within Istanbul's vibrant retail landscape. Researchers and analysts can leverage this dataset to gain a deeper understanding of shopping patterns and trends in the city.
+
+#Attribute Details:
+
+#*invoice_no*: The number of the invoice, Each operation is identified by a combination of the letter 'I' and a 6-digit number.
+#*customer_id*: The customer's identification number, Each operation is identified by a combination of the letter 'C' and a 6-digit number.
+#*gender*: A string variable representing the customer's gender.
+#*age*: The age of the consumer is an integer variable.
+#*category*: A string variable representing the purchased product's category.
+#*quantity*: The amount of each product (item) per transaction. 
+#*Price in numbers*: Unit price, The unit price of the product is in Turkish Liras (TL).
+#*payment_method*: A string variable containing the payment method used for the transaction (cash, credit card, or debit card).
+#*invoice_date*: The date of the invoice. The date on which a transaction was created.
+#*shopping_mall*: A string variable containing the name of the shopping center where the transaction was completed.
+```
+The Istanbul Shopping Dataset is a rich collection of 99,458 records spanning the years 2021 to 2023, sourced from ten malls in Istanbul. The dataset includes information such as invoice numbers, client IDs, demographics, payment methods, and product details. This comprehensive dataset serves as a valuable resource, offering insights into consumer behavior and decision-making within Istanbul's vibrant retail landscape. Researchers and analysts can leverage this dataset to gain a deeper understanding of shopping patterns and trends in the city.
+
+Attribute Details:
+
+
+*invoice_no*: The number of the invoice, Each operation is identified by a combination of the letter 'I' and a 6-digit number.
+
+*customer_id*: The customer's identification number, Each operation is identified by a combination of the letter 'C' and a 6-digit number.
+
+*gender*: A string variable representing the customer's gender.
+
+*age*: The age of the consumer is an integer variable.
+
+*category*: A string variable representing the purchased product's category.
+
+*quantity*: The amount of each product (item) per transaction. 
+
+*Price in numbers*: Unit price, The unit price of the product is in Turkish Liras (TL).
+
+*payment_method*: A string variable containing the payment method used for the transaction (cash, credit card, or debit card).
+
+*invoice_date*: The date of the invoice. The date on which a transaction was created.
+
+*shopping_mall*: A string variable containing the name of the shopping center where the transaction was completed.
+
+
+
+# 2 Explarotary Data Analysis
+
+## 2.1 Loading the Data
+
+```{r}
+customer_data=read.csv((file.choose()))
+# Convert date to a proper date format
+customer_data$invoice_date = as.Date(customer_data$invoice_date, format = "%d/%m/%Y")
+head(customer_data)
+```
+The dataset "customer_shopping_data" is loaded into a dataframe called 'customer_data'
+
+## 2.2  Defining the Target Variable
+```{r}
+
+customer_data$total_cost <- customer_data$quantity * customer_data$price
+
+head(customer_data)
+#Target Variable is the Product of two individual Features (quantity, price) in the given Columns of the DataSet.
+```
+Target Variable is the Product of two individual Features (quantity, price) in the given Columns of the DataSet.
+
+## 2.3  Verifying the Null Values and Data Claeaning
+
+```{r}
+# Check for missing values
+sum(is.na(customer_data))
+#There are 0 null values in the data
+```
+There are 0 null values in the data
+
+```{r, results='markup'}
+# Check data types
+str(customer_data)
+#There are a total 4 different variables(6 - Charavter, 2 - Number, 2 - Integer, 1 - Date ) in the dataset
+```
+There are a total 4 different variables(6 - Charavter, 2 - Number, 2 - Integer, 1 - Date ) in the dataset
+
+## 2.4  Ensure proper factors
+
+```{r, results='markup'}
+customer_data$gender = factor(customer_data$gender)
+customer_data$category = factor(customer_data$category)
+customer_data$payment_method = factor(customer_data$payment_method)
+customer_data$shopping_mall = factor(customer_data$shopping_mall)
+```
+It is used to store categorical variables along with that which takes the categorical variable and stores data in levels as we defined
+
+## 2.5  Check the dataset For Analysis
+
+```{r, results='markup'}
+
+head(customer_data)
+#summary(customer_data)
+```
+The customer_data dataset contains information from different shopping events in Istanbul. It includes details like where the shopping happened, when it took place, what was bought, and how it was paid for. Each row represents a unique shopping transaction. The dataset is useful for understanding trends, such as popular products, preferred payment methods, and age group preferences. It's a valuable resource for businesses to tailor their offerings to match the diverse shopping behaviors of customers in Istanbul.
+
+## 2.6  Subsetting the dataset based on different conditions
+
+```{r, results='markup'}
+# Subsetting the dataset for female customers
+female_customers = subset(customer_data, gender == "Female")
+head(female_customers)
+# Subsetting the dataset for customers older than 30
+older_customers = subset(customer_data, age > 30)
+head(older_customers)
+# Subsetting the dataset for Clothing category
+clothing_data = subset(customer_data, category == "Clothing")
+head(clothing_data)
+# Subsetting the dataset for customers who shopped at Kanyon mall
+kanyon_shoppers = subset(customer_data, shopping_mall == "Kanyon")
+head(kanyon_shoppers)
+# Subsetting the dataset for customers who used Credit Card as the payment method
+credit_card_customers = subset(customer_data, payment_method == "Credit Card")
+head(credit_card_customers)
+#The code creates subsets depending on a variety of parameters, including gender, age, product category, shopping mall, and payment method, in an effort to explore and comprehend diverse regions of the dataset. It creates unique subsets of data for additional analysis by using the'subset' function to filter the dataset rows that satisfy each requirement. The initial few rows of each subset are then shown using the 'head' function, giving a sneak peek at the data that meets each specific requirement. This code enables for a more specific and concentrated investigation of the various dataset parts and forms the basis for data exploration.
+```
+The code creates subsets depending on a variety of parameters, including gender, age, product category, shopping mall, and payment method, in an effort to explore and comprehend diverse regions of the dataset. It creates unique subsets of data for additional analysis by using the'subset' function to filter the dataset rows that satisfy each requirement. The initial few rows of each subset are then shown using the 'head' function, giving a sneak peek at the data that meets each specific requirement. This code enables for a more specific and concentrated investigation of the various dataset parts and forms the basis for data exploration.
+
+## 2.7 Data Visualization
+
+### 2.7.1 Plotting the Distribution Graphs
+```{r}
+# Histogram for Age
+library(ggplot2)
+ggplot(customer_data, aes(x = age)) +
+  geom_histogram(binwidth = 5, fill = "lightblue", color = "black") +
+  labs(
+    title = "Age Distribution",
+    x = "Age",
+    y = "Frequency"
+  )
+
+# Histogram for Price
+ggplot(customer_data, aes(x = price)) +
+  geom_histogram(binwidth = 50, fill = "lightgreen", color = "black") +
+  labs(
+    title = "Price Distribution",
+    x = "Price",
+    y = "Frequency"
+  )
+
+# Histogram for Quantity
+ggplot(customer_data, aes(x = quantity)) +
+  geom_histogram(binwidth = 1, fill = "lightpink", color = "black") +
+  labs(
+    title = "Quantity Distribution",
+    x = "Quantity",
+    y = "Frequency"
+  )
+#The first graph shows the age distribution of customers, revealing a peak between 20 and 60 years. The second graph illustrates customer spending, indicating that many customers make no purchases, while those who do often spend around $500. In the third graph, the average number of items purchased is displayed, with a consistent trend showing that most customers buy three items. Overall, these graphs provide insights into customer age preferences, spending habits, and the typical quantity of items purchased.
+```
+
+The first graph shows the age distribution of customers, revealing a peak between 20 and 60 years. The second graph illustrates customer spending, indicating that many customers make no purchases, while those who do often spend around $500. In the third graph, the average number of items purchased is displayed, with a consistent trend showing that most customers buy three items. Overall, these graphs provide insights into customer age preferences, spending habits, and the typical quantity of items purchased.
+
+
+### 2.7.2 Plotting the Feature vs.Feature Graph comparision
+```{r}
+library(ggplot2)
+categorical_features <- c("gender", "category", "payment_method")
+for (feature in categorical_features) {
+  plot <- ggplot(customer_data, aes_string(x = feature, fill = feature)) +
+    geom_bar() +
+    labs(
+      title = paste("Count Plot of", feature),
+      x = feature,
+      y = "Count"
+    ) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  print(plot)
+}
+
+#The bar graphs depict frequency distributions in a dataset. The first one indicates more females than males. In the second, clothing is the best-selling category, while books, technology, and souvenirs have nearly equal and lower sales. The third graph shows cash as the most preferred payment method, while the least preferred is also cash.
+```
+
+The bar graphs depict frequency distributions in a dataset. The first one indicates more females than males. In the second, clothing is the best-selling category, while books, technology, and souvenirs have nearly equal and lower sales. The third graph shows cash as the most preferred payment method, while the least preferred is also cash.
+
+
+### 2.7.3 Boxplot for age distribution which was categorized by gender
+
+```{r}
+library(ggplot2)
+ggplot(customer_data, aes(x = gender, y = age, fill = gender)) +
+  geom_boxplot() +
+  labs(
+    title = "Age Distribution by Gender",
+    x = "Gender",
+    y = "Age"
+  ) +
+  theme_minimal()
+#The Box plot compares the age distribution of male and female customers in the dataset. It reveals that there's no significant difference in age between the two genders, as indicated by the similar spread and median values. In simpler terms, when looking at the ages of male and female customers, there isn't any noticeable distinction based on the provided data.
+```
+
+The Box plot compares the age distribution of male and female customers in the dataset. It reveals that there's no significant difference in age between the two genders, as indicated by the similar spread and median values. In simpler terms, when looking at the ages of male and female customers, there isn't any noticeable distinction based on the provided data.
+
+### 2.7.4 EDA using ggplot2 - Scatter plot to examine the relationship between age and total cost
+
+```{r}
+ggplot(data = customer_data, aes(x = age, y = total_cost)) +
+  geom_point() +
+  labs(title = "Scatter Plot: Age vs. Total Cost", x = "Age", y = "Total Cost")
+#The scatter plot shows the relationship between customer age and total spending. Looking at the graph, it appears that there is no clear trend, and the points seem to form a straight line. This suggests that there isn't a noticeable correlation between age and the amount customers spend. The data points are scattered without following a specific pattern. In simpler terms, the graph doesn't show any consistent increase or decrease in spending as customers get older. The lack of a distinct trend indicates that age may not be a significant factor influencing the total cost incurred by the customers.
+```
+
+The scatter plot shows the relationship between customer age and total spending. Looking at the graph, it appears that there is no clear trend, and the points seem to form a straight line. This suggests that there isn't a noticeable correlation between age and the amount customers spend. The data points are scattered without following a specific pattern. In simpler terms, the graph doesn't show any consistent increase or decrease in spending as customers get older. The lack of a distinct trend indicates that age may not be a significant factor influencing the total cost incurred by the customers.
+
+
+### 2.7.5 Bar plot to compare total cost by Product category
+
+```{r}
+ggplot(data = customer_data, aes(x = category, y = total_cost, fill = category)) +
+  geom_bar(stat = "summary", fun = "mean") +
+  labs(title = "Total Cost by Category", x = "Category", y = "Mean Total Cost")
+#The bar graph illustrates the average total cost spent by customers across different categories. Notably, technology expenses stand out as the highest, while spending on food and beverages is at the lowest. The vertical axis represents the average amount spent, with technology reaching the peak and food and beverages at the bottom of the graph. This visual representation provides a clear comparison of customer spending patterns, showcasing that technology-related purchases are the most significant, while expenditures on food and beverages are comparatively lower.
+```
+
+The bar graph illustrates the average total cost spent by customers across different categories. Notably, technology expenses stand out as the highest, while spending on food and beverages is at the lowest. The vertical axis represents the average amount spent, with technology reaching the peak and food and beverages at the bottom of the graph. This visual representation provides a clear comparison of customer spending patterns, showcasing that technology-related purchases are the most significant, while expenditures on food and beverages are comparatively lower.
+
+
+### 2.7.6 Feature Engineering and General analysis on gender, age
+
+```{r}
+library("dplyr")
+library("magrittr")
+customer_data <- customer_data %>% mutate(invoice_date = as.Date(invoice_date,'%d/%m/%Y'))
+customer_data <- customer_data %>% mutate(total_cost = price*quantity)
+customer_data <- customer_data %>% mutate(age_group = ifelse(age < 20, "10's",
+                              ifelse(age < 30, "20's",
+                              ifelse(age < 40, "30's",
+                              ifelse(age < 50, "40's",
+                              ifelse(age < 60, "50's", "60's")))))) %>% 
+  dplyr::select(shopping_mall, invoice_date, invoice_no, customer_id, gender, age, age_group, category, quantity, price, total_cost,
+         payment_method)
+head(customer_data)
+
+#feature engineering to get age group column
+frequency_table1 <- customer_data %>%
+  count(gender) %>%
+  mutate(percentage = n / sum(n) * 100)
+
+# Performing one-hot encoding for payment method and genders
+payment_methods <- unique(customer_data$payment_method)
+for (method in payment_methods) {
+  customer_data[paste0("payment_", method)] <- as.integer(customer_data$payment_method == method)
+}
+genders <- unique(customer_data$gender)
+for (method in genders) {
+  customer_data[paste0("gender_", method)] <- as.integer(customer_data$gender == method)
+}
+
+ggplot(frequency_table1, aes(x = "", y = percentage, fill = gender)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), position = position_stack(vjust = 0.5), color = "white") +
+  ggtitle("Pie Chart for Gender") + labs(fill= "Gender") +
+  theme_void()
+
+frequency_table2 <- customer_data %>%
+  count(age_group) %>%
+  mutate(percentage = n / sum(n) * 100) 
+
+ggplot(frequency_table2, aes(x = "", y = percentage, fill = age_group)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), position = position_stack(vjust = 0.5), color = "white") +
+  ggtitle("Pie Chart for Age Group") + labs(fill= "Age Group") +
+  theme_void()
+
+#The first pie chart displays the gender distribution in a consumer dataset, revealing that females constitute the largest percentage. The second chart illustrates how different age groups are distributed within the dataset.
+```
+
+The first pie chart displays the gender distribution in a consumer dataset, revealing that females constitute the largest percentage. The second chart illustrates how different age groups are distributed within the dataset.
+
+
+### 2.7.7 Bar chat for consumption by payment method and by age group
+```{r}
+payment_vector <- customer_data%>% group_by(payment_method, age_group) %>% summarise(customer = n(),sales_USD = sum(total_cost*0.052/1000), .groups = "drop") %>% arrange(sales_USD %>% desc())
+payment_vector %>% 
+  ggplot(aes(reorder(age_group, sales_USD), sales_USD)) +
+  geom_col(position = 'dodge', fill = 'orange', col = 'black', alpha = .7) +
+  coord_flip() + 
+  facet_wrap(~ payment_method) +
+  labs(title = 'Consumption by payment method by age group ',
+       subtitle = '1 = 1,000$') +
+  ylab('Total Cost') +
+  xlab('Payment Method by Age') +
+  theme_bw() +
+  theme(plot.title = element_text(face = 'bold', size = 10, hjust = .5),
+        axis.title.y = element_text(face = 'italic'),
+        axis.title.x = element_text(face = 'italic'),
+        axis.text.x = element_text(face = 'bold'),
+        axis.text.y = element_text(face = 'bold'),
+        strip.text.x = element_text(face = 'bold' , color = 'white', size = 7),
+        strip.background.x = element_rect(fill = 'darkred'))
+#This bar graph illustrates customers' preferred payment methods based on their ages, with the average total cost spent by customers on the x-axis.
+``` 
+
+This bar graph illustrates customers' preferred payment methods based on their ages, with the average total cost spent by customers on the x-axis.
+
+### 2.7.8 Graphs demonstrating for quantity and shopping mall Analysis
+
+```{r}
+frequency_table4 <- customer_data %>%
+  count(shopping_mall) %>%
+  mutate(percentage = n / sum(n) * 100)
+
+ggplot(frequency_table4, aes(x = "", y = percentage, fill = shopping_mall)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), position = position_stack(vjust = 0.5), color = "white") +
+  ggtitle("Pie Chart for Shopping Mall") + labs(fill= "Shopping Mall") +  theme_void()
+
+mall_vector <- customer_data %>% group_by(shopping_mall) %>% summarise(customer = n(), sales_USD = sum(total_cost*0.052/1000), .groups = "drop") %>% arrange(sales_USD %>% desc())
+mall_vector %>% 
+  ggplot() + 
+  geom_col(aes(reorder(shopping_mall, sales_USD), sales_USD), 
+           fill = 'darkgreen', col = 'black', alpha = .6,width = .7) +
+  coord_flip() + 
+  labs(title = 'Shopping Mall Ranking', subtitle = '1 = 1,000$') + ylab('Total cost as Sales in USD') +
+  xlab('') +
+  theme(plot.title = element_text(size = 10, face = 'bold', hjust = .5),
+        axis.title.y = element_text(face = 'bold'),
+        axis.text.y = element_text(face = 'bold', size = 7),
+        axis.title.x = element_text(face = 'italic', size = 7),
+        axis.text.x = element_text(face = 'bold'))
+#The pie chart shows the most visited shopping malls, with Mall of Istanbul and Kanyon being the top choices. In the second graph, the total cost is plotted against sales, revealing that Mall of Istanbul and Kanyon generate the highest revenue, while Forum of Istanbul lags behind at the bottom. These two malls are standout performers in terms of customer visits and sales, making them key players in the dataset analysis.
+```
+
+The pie chart shows the most visited shopping malls, with Mall of Istanbul and Kanyon being the top choices. In the second graph, the total cost is plotted against sales, revealing that Mall of Istanbul and Kanyon generate the highest revenue, while Forum of Istanbul lags behind at the bottom. These two malls are standout performers in terms of customer visits and sales, making them key players in the dataset analysis.
+
+
+### 2.7.9 Histogram for Age and Categories 
+
+```{r}
+customer_data %>% ggplot(data = customer_data, mapping = aes(x = age_group)) +
+  geom_histogram(binwidth = 5, fill = 'darkblue', col = 'black', stat = "count") + facet_wrap(~ category) + 
+  xlab("Age Group") +
+  ylab("Frequency") +
+  ggtitle("Histogram for Age Group by Category") +
+  theme(plot.title = element_text(face = 'bold', size = 10, hjust = .5),
+        axis.title = element_text(face = 'italic'),
+        axis.text = element_text(face = 'bold', size = 7, angle = 0))
+#The graph gives us a visual representation of how often items from each category are purchased based on people's age. Clothing is the top performer, consistently selling well. Meanwhile, books, souvenirs, and technology have comparable, lower sales figures across all age groups. The histogram provides a quick and easy way to understand the sales distribution for each category, helping to identify trends in consumer preferences across different age demographics.
+```
+
+The graph gives us a visual representation of how often items from each category are purchased based on people's age. Clothing is the top performer, consistently selling well. Meanwhile, books, souvenirs, and technology have comparable, lower sales figures across all age groups. The histogram provides a quick and easy way to understand the sales distribution for each category, helping to identify trends in consumer preferences across different age demographics.
+
+
+### 2.7.10 Histogram for Gender and Categories 
+
+```{r}
+customer_data %>% ggplot(data = customer_data, mapping = aes(x = category)) +
+  geom_histogram(binwidth = 5, fill = 'brown', col = 'black', stat = "count") + facet_wrap(~ gender) + 
+  xlab("Category") +
+  ylab("Frequency") +
+  ggtitle("Histogram for Category by Gender") +
+  theme(plot.title = element_text(face = 'bold', size = 10, hjust = .5),
+        axis.title = element_text(face = 'italic'),
+        axis.text = element_text(face = 'bold', size = 7, angle = 20))
+#The histogram illustrates the total product purchases by customers categorized by gender. Surprisingly, both males and females exhibit nearly equal trends in their buying patterns. Among the product categories, clothing emerges as the top seller, capturing the attention of both genders. On the other hand, books, souvenirs, and technology items lag behind, being the least popular choices among customers. This information sheds light on the consumer preferences within different product categories, highlighting the strong appeal of clothing and the relatively lower interest in books, souvenirs, and technology products. Understanding these trends can be valuable for businesses aiming to tailor their offerings to meet customer demands and optimize their product portfolios.
+```
+
+The histogram illustrates the total product purchases by customers categorized by gender. Surprisingly, both males and females exhibit nearly equal trends in their buying patterns. Among the product categories, clothing emerges as the top seller, capturing the attention of both genders. On the other hand, books, souvenirs, and technology items lag behind, being the least popular choices among customers. This information sheds light on the consumer preferences within different product categories, highlighting the strong appeal of clothing and the relatively lower interest in books, souvenirs, and technology products. Understanding these trends can be valuable for businesses aiming to tailor their offerings to meet customer demands and optimize their product portfolios.
+
+
+### 2.7.11 Box Plot for Quantites and Total Sales
+
+```{r}
+ggplot(data = customer_data, mapping = aes(x = factor(quantity), y = total_cost*0.052)) +
+  geom_boxplot() +
+  xlab("Quantity") +
+  ylab("Total Sales in USD") +
+  ggtitle("Box Plot for Quantites and Total Sales ($)")
+#The box plot helps us understand how product sales vary across different quantities. It provides insights into the central tendency, spread, and potential outliers in the sales distribution. This type of visualization is useful for quickly grasping the sales patterns associated with various quantities of products, aiding in decision-making and analysis of sales performance.
+```
+
+The box plot helps us understand how product sales vary across different quantities. It provides insights into the central tendency, spread, and potential outliers in the sales distribution. This type of visualization is useful for quickly grasping the sales patterns associated with various quantities of products, aiding in decision-making and analysis of sales performance.
+
+
+### 2.7.12 Correlation matrix for the fields in the dataset
+
+```{r}
+library(corrplot)
+correlation_matrix <- cor(customer_data[ c("age", "quantity", "price", "total_cost","gender_Male","gender_Female","payment_Debit Card","payment_Cash","payment_Credit Card")])
+corrplot(correlation_matrix, method = "color", type = "upper", tl.col = "black", tl.srt = 45)
+#We also took a look at a correlation matrix for the fields we are interested in.
+
+#Before interpreting the correlations, there are some caveats to the data. Gender and payment method are created based on the data from the dataset and have done feature engineering on these variables and, From the matrix, there is an interestingly strong correlation between quantity and the total price 
+```
+We also took a look at a correlation matrix for the fields we are interested in.
+
+Before interpreting the correlations, there are some caveats to the data. Gender and payment method are created based on the data from the dataset and have done feature engineering on these variables and, From the matrix, there is an interestingly strong correlation between quantity and the total price
+
+
+
+# 3 Smart Questions / models
+
+## 3.1.1 Is there a correlation between a customer's age and gender effect on shopping behavior? 
+```{r}
+library(ggplot2)
+shopping_model1 <- lm(total_cost ~ age + gender, data = customer_data)
+summary(shopping_model1)
+ggplot(data = customer_data, aes(x = age, y = total_cost, color = gender)) +
+  geom_smooth(method = "lm", se = FALSE) +  # Add a linear regression line
+  labs(x = "Age", y = "total_cost", title = "Regression of Totalcost on Age by Gender") + guides(color = guide_legend(title = "Gender"))
+
+#This linear regression graph states that the quantity bought increases with age for Males, whereas it decreases for Females, And linear regression analysis was performed to investigate the association between total cost and two predictor factors, age and gender. The intercept, which represents the anticipated total cost when age and gender are both zero, is 2491.798, with a t-value of 58.63 (p 2e-16) demonstrating a substantial correlation. The coefficients for age (0.770, p = 0.39) and gender (8.847 for men, p = 0.75), on the other hand, indicate weak or non-existent connections because their t-values are not statistically significant. The overall fit of the model is poor, with an R-squared value of 8.51e-06 and an adjusted R-squared value of -1.16e-05. The F-statistic is 0.423 with a p-value of 0.655, confirming the model's lack of significance. 
+
+#In conclusion, the linear regression analysis in this dataset does not give considerable evidence to support the hypothesis that age and gender significantly affect overall cost. To properly explain the variation in total cost across consumers, more elements or a different model may be required.
+```
+
+This linear regression graph states that the quantity bought increases with age for Males, whereas it decreases for Females, And linear regression analysis was performed to investigate the association between total cost and two predictor factors, age and gender. The intercept, which represents the anticipated total cost when age and gender are both zero, is 2491.798, with a t-value of 58.63 (p 2e-16) demonstrating a substantial correlation. The coefficients for age (0.770, p = 0.39) and gender (8.847 for men, p = 0.75), on the other hand, indicate weak or non-existent connections because their t-values are not statistically significant. The overall fit of the model is poor, with an R-squared value of 8.51e-06 and an adjusted R-squared value of -1.16e-05. The F-statistic is 0.423 with a p-value of 0.655, confirming the model's lack of significance. 
+
+In conclusion, the linear regression analysis in this dataset does not give considerable evidence to support the hypothesis that age and gender significantly affect overall cost. To properly explain the variation in total cost across consumers, more elements or a different model may be required.
+
+
+## 3.1.2 Is there a correlation between a customer's age and gender effect on shopping behavior? 
+```{r}
+library(ggplot2)
+shopping_model1_quantity <- lm(quantity ~ age + gender, data = customer_data)
+summary(shopping_model1)
+ggplot(data = customer_data, aes(x = age, y = quantity, color = gender)) +
+  geom_smooth(method = "lm", se = FALSE) +  # Add a linear regression line
+  labs(x = "Age", y = "Quantity", title = "Regression of Quantity on Age by Gender") + guides(color = guide_legend(title = "Gender"))
+
+#The graph shows how age and gender (Male) affect a certain result. The intercept (beginning point) was about 2491.8. Because the p-value for age is 0.389 (not significant), the number 0.7699 does not appear to be significant. Being Male (genderMale) with a coefficient of 8.8472 is similarly not statistically significant (p-value = 0.746). The overall model fit was poor (R-squared around 0), indicating that age and gender did not explain much of the result. Based on this, it appears that age and gender may not be good indicators of outcome.
+
+#In conclusion, the linear regression analysis in this dataset does not give considerable evidence to support the hypothesis that age and gender significantly affect quantity.
+```
+The graph shows how age and gender (Male) affect a certain result. The intercept (beginning point) was about 2491.8. Because the p-value for age is 0.389 (not significant), the number 0.7699 does not appear to be significant. Being Male (genderMale) with a coefficient of 8.8472 is similarly not statistically significant (p-value = 0.746). The overall model fit was poor (R-squared around 0), indicating that age and gender did not explain much of the result. Based on this, it appears that age and gender may not be good indicators of outcome.
+
+In conclusion, the linear regression analysis in this dataset does not give considerable evidence to support the hypothesis that age and gender significantly affect quantity.
+
+
+
+## 3.2 Does the payment method affect the total purchase amount? 
+```{r}
+shopping_model2 <- lm(price ~ payment_method, data = customer_data)
+summary(shopping_model2)
+ggplot(data = customer_data, aes(x = payment_method, y = price, fill = payment_method)) +
+  geom_boxplot() +
+  labs(x = "Payment Method", y = "Total Cost", title = "Boxplot of Price by Payment Method") +
+  scale_fill_manual(values = c("#66c2a5", "#fc8d62", "#8da0cb"))
+
+#The boxplot suggests that Payment Method (Credit Card or Debit Card) does not significantly impact Purchase Amount in this dataset, as it is not a statistically significant predictor and the linear regression analysis offers information on the link between payment methods and product pricing. The model comprises three coefficients that indicate the intercept and the influence of two payment methods on the pricing, namely Credit Card and Debit Card. The intercept, at 680.82, represents the baseline pricing when no specific approach is taken into account. However, the coefficients for Credit Card and Debit Card, -2.28 and -3.79, respectively, show that these payment methods may result in a price drop, while these effects are not statistically significant given their p-values of 0.73 and 0.64. The entire model's low Multiple R-squared (2.57e-06) and Adjusted R-squared (-1.75e-05) values show weak explanatory power, and the F-statistic (0.128) with a p-value of 0.88 suggests that the model is insignificant. 
+
+#In conclusion, the payment method does not appear to be a significant predictor of product prices in the present analysis, and the model does not provide useful insights into pricing dynamics based on payment methods in the supplied dataset.
+```
+
+The boxplot suggests that Payment Method (Credit Card or Debit Card) does not significantly impact Purchase Amount in this dataset, as it is not a statistically significant predictor and the linear regression analysis offers information on the link between payment methods and product pricing. The model comprises three coefficients that indicate the intercept and the influence of two payment methods on the pricing, namely Credit Card and Debit Card. The intercept, at 680.82, represents the baseline pricing when no specific approach is taken into account. However, the coefficients for Credit Card and Debit Card, -2.28 and -3.79, respectively, show that these payment methods may result in a price drop, while these effects are not statistically significant given their p-values of 0.73 and 0.64. The entire model's low Multiple R-squared (2.57e-06) and Adjusted R-squared (-1.75e-05) values show weak explanatory power, and the F-statistic (0.128) with a p-value of 0.88 suggests that the model is insignificant. 
+
+In conclusion, the payment method does not appear to be a significant predictor of product prices in the present analysis, and the model does not provide useful insights into pricing dynamics based on payment methods in the supplied dataset.
+
+## 3.3 Does the shopping mall location affect the purchase frequency? 
+```{r}
+shopping_model3 <- lm(quantity ~ shopping_mall, data = customer_data)
+summary(shopping_model3)
+ggplot() +
+  geom_col(data = customer_data, aes(x = shopping_mall, y = quantity, fill = shopping_mall)) +
+  labs(x = "Shopping Mall", y = "Transactions", title = "Bar chart of Purchase Frequency by Shopping Malls") +
+  scale_fill_manual(values = c('red', 'blue', 'green', 'orange', 'purple', 'pink', 'brown', 'cyan', 'gray', 'yellow')) + 
+  theme(axis.text = element_text(face = 'bold', size = 7, angle = 20))
+#The bar plot says that location has a considerable impact on the frequency of shopping. The Istanbul mall and Kanyon location have the most transactions. The linear regression analysis offers information about the relationship between the quantity variable and the different retail malls in the dataset. The intercept, which represents the baseline number when no specific shopping mall is taken into account, is assessed to be 2.995191 with a high level of statistical significance. However, when the coefficients for particular retail malls are examined, none of them have a statistically significant influence on the quantity variable. The p-values for each coefficient indicate that the existence of these retail malls has no significant effect on the quantity variable. The low R-squared values also imply that the model does not explain a large portion of the variation in the quantity variable
+
+#In summary, We may conclude from the regression results that there is no statistically significant association between the location of the shopping center and the quantity purchased. Based on the statistics in the dataset, a bar plot demonstrates that the Mall of Istanbul and Mall of Kanyon have the biggest purchase quantity. This implies that a bar plot just depicts the distribution of data and does not provide evidence for causation or correlations between variables.
+```
+
+The bar plot says that location has a considerable impact on the frequency of shopping. The Istanbul mall and Kanyon location have the most transactions. The linear regression analysis offers information about the relationship between the quantity variable and the different retail malls in the dataset. The intercept, which represents the baseline number when no specific shopping mall is taken into account, is assessed to be 2.995191 with a high level of statistical significance. However, when the coefficients for particular retail malls are examined, none of them have a statistically significant influence on the quantity variable. The p-values for each coefficient indicate that the existence of these retail malls has no significant effect on the quantity variable. The low R-squared values also imply that the model does not explain a large portion of the variation in the quantity variable
+
+In summary, We may conclude from the regression results that there is no statistically significant association between the location of the shopping center and the quantity purchased. Based on the statistics in the dataset, a bar plot demonstrates that the Mall of Istanbul and Mall of Kanyon have the biggest purchase quantity. This implies that a bar plot just depicts the distribution of data and does not provide evidence for causation or correlations between variables.
+
+## 3.4 Are certain product categories associated with higher total purchase amounts than others?
+```{r}
+model<- lm(price ~ category, data = customer_data)
+summary(model)
+ggplot(customer_data, aes(x = category, y = price, fill=category)) +
+  geom_boxplot() +
+  labs(x = "Product Category", y = "Price") +
+  ggtitle("Boxplot of Price by Product Category")+
+  scale_fill_brewer(palette = "Set3")+
+  theme(axis.text = element_text(face = 'bold', size = 7, angle = 20))
+
+
+#Overall, the boxplot supports the hypothesis that product category affects purchase amount, with technology products having the highest impact, followed by shoes and clothing, In the supplied customer data, the linear regression model was used to estimate pricing based on different product categories. When no category is supplied, the intercept term is 45.57, which represents the expected price. Each category coefficient represents the price change relative to the reference category (which is not expressly indicated). Notably, clothing, cosmetics, shoes, and technology have significantly significant positive coefficients, implying a considerable positive influence on costs. Food & Beverage, on the other hand, has a negative coefficient, indicating a likely price fall. The model's overall performance is reasonable, with an adjusted R-squared of 0.723, implying that the selected categories explain roughly 72.3% of the variability in pricing. The F-statistic is extremely significant, supporting the overall validity of the model 
+
+#In summary analyzing, the results suggest that product category significantly affects purchase amount, with technology products having the highest impact, followed by shoes and clothing. At the same time, food & beverage may hurt the purchase amount. Based on the results, the souvenir category may not significantly affect the purchase amount.
+ 
+```
+
+Overall, the boxplot supports the hypothesis that product category affects purchase amount, with technology products having the highest impact, followed by shoes and clothing, In the supplied customer data, the linear regression model was used to estimate pricing based on different product categories. When no category is supplied, the intercept term is 45.57, which represents the expected price. Each category coefficient represents the price change relative to the reference category (which is not expressly indicated). Notably, clothing, cosmetics, shoes, and technology have significantly significant positive coefficients, implying a considerable positive influence on costs. Food & Beverage, on the other hand, has a negative coefficient, indicating a likely price fall. The model's overall performance is reasonable, with an adjusted R-squared of 0.723, implying that the selected categories explain roughly 72.3% of the variability in pricing. The F-statistic is extremely significant, supporting the overall validity of the model 
+
+In summary analyzing, the results suggest that product category significantly affects purchase amount, with technology products having the highest impact, followed by shoes and clothing. At the same time, food & beverage may hurt the purchase amount. Based on the results, the souvenir category may not significantly affect the purchase amount.
+
+
+# 4 Result Reliability
+```{r}
+#The robustness of these findings is demonstrated by the entire research, which shows that age and gender have no impact on spending habits. The statistical relevance of product categories in molding purchase quantities increases the believability of the results. The lack of an obvious association between age, gender, and total spending increases the dependability, implying that personal demographics have little influence. This emphasizes the robustness of the findings, emphasizing that consumer purchasing behavior is predominantly influenced by product preferences rather than demographic considerations, contributing to the study's overall dependability.
+```
+
+The robustness of these findings is demonstrated by the entire research, which shows that age and gender have no impact on spending habits. The statistical relevance of product categories in molding purchase quantities increases the believability of the results. The lack of an obvious association between age, gender, and total spending increases the dependability, implying that personal demographics have little influence. This emphasizes the robustness of the findings, emphasizing that consumer purchasing behavior is predominantly influenced by product preferences rather than demographic considerations, contributing to the study's overall dependability.
+
+# 5 Areas for Improvement
+```{r}
+#While the study provides light on essential factors, there are several things that may be done better. Investigating possible relationships between factors such as age and product categories might yield further information. Furthermore, taking into account external factors such as economic situations or promotional events may improve the model's explanatory capacity. A restriction is the omission of some variables, such as consumer preferences or marketing impacts. Incorporating these factors might result in a more complex understanding. Overall, enhancing the model with more elements and investigating interactions would result in a more comprehensive and accurate depiction of the factors driving consumer purchasing.
+```
+
+While the study provides light on essential factors, there are several things that may be done better. Investigating possible relationships between factors such as age and product categories might yield further information. Furthermore, taking into account external factors such as economic situations or promotional events may improve the model's explanatory capacity. A restriction is the omission of some variables, such as consumer preferences or marketing impacts. Incorporating these factors might result in a more complex understanding. Overall, enhancing the model with more elements and investigating interactions would result in a more comprehensive and accurate depiction of the factors driving consumer purchasing.
+
+
+# 6 Conclusion
+```{r}
+#Upon thorough examination, it appears that factors like age and gender have minimal impact on individuals' spending habits. In contrast, the product category significantly influences the amount spent, with distinct categories showing substantial effects on purchase amounts. Surprisingly, there is no clear correlation between age, gender, and the total expenditure. In essence, while personal demographics play a limited role, it is the type of product chosen that distinctly shapes the overall spending behavior, indicating that consumers are driven more by product preferences than demographic factors.
+```
+
+Upon thorough examination, it appears that factors like age and gender have minimal impact on individuals' spending habits. In contrast, the product category significantly influences the amount spent, with distinct categories showing substantial effects on purchase amounts. Surprisingly, there is no clear correlation between age, gender, and the total expenditure. In essence, while personal demographics play a limited role, it is the type of product chosen that distinctly shapes the overall spending behavior, indicating that consumers are driven more by product preferences than demographic factors.
+
+# 7 References
+```{r}
+# For those interested in linear regression, IBM provides a useful resource: 
+# https://www.ibm.com/topics/linear-regression#:~:text=Resources-,What%20is%20linear%20regression%3F,is%20called%20the%20independent%20variable.
+# Additionally, insightful thoughts on effective questions by Kautsar: 
+# https://emkautsar.medium.com/highly-effective-questions-are-smart-questions-59040efea480
+# Excited to explore and analyze the customer shopping dataset on Kaggle: 
+# https://www.kaggle.com/code/mostafaabdelbadie/customer-shopping-dataset-retail-sales-data-eda/input
+```
+
+Mostafaabdelbadie. (2023a, March 13). Customer shopping dataset - retail sales data. Kaggle. https://www.kaggle.com/code/mostafaabdelbadie/customer-shopping-dataset-retail-sales-data-eda/input 
+
+About linear regression. IBM. (n.d.). https://www.ibm.com/topics/linear-regression#:~:text=Resources-,What%20is%20linear%20regression%3F,is%20called%20the%20independent%20variable.  
+
+Kautsar, E. (2021, March 30). Highly effective questions are smart questions. Medium. https://emkautsar.medium.com/highly-effective-questions-are-smart-questions-59040efea480 
