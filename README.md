@@ -47,6 +47,12 @@ In this project, we aim to answer the following SMART questions:
 2. *Is there a correlation between a customer's age and gender with their shopping behavior?*
 3. *Does the shopping mall location affect the frequency of purchases?*
 4. *Are certain product categories associated with higher total purchase amounts than others?*
+---
+
+## Key Findings
+- **Demographic Factors**: Age and gender appear to have **minimal impact** on purchasing behavior, with **product category** being the dominant factor.
+- **Product Categories**: Different product categories show **distinctive effects** on the total purchase amount, providing insights into **consumer preferences**.
+- **Reliability**: The results emphasize that **consumer preferences** are more influential in determining spending patterns than personal demographics.
 
 ---
 
@@ -58,14 +64,27 @@ In this project, we aim to answer the following SMART questions:
 
 ---
 
+## Areas for Improvement
+While the study revealed important insights, several improvements could be made:
+- Investigate the relationships between **age** and **product categories** to explore deeper insights into consumer behavior.
+- Consider external factors such as **economic conditions** or **promotional events** to improve the model’s accuracy.
+- Incorporate **consumer preferences** or **marketing effects** into the analysis for a more comprehensive understanding.
+
+---
+
+## Conclusion
+Our analysis highlights that **product preferences** are the primary determinant of consumer spending in Istanbul’s malls, while **age** and **gender** have a **minimal impact**. This finding suggests that marketing and sales strategies should focus more on **product categorization** and **consumer choice patterns** rather than demographic targeting.
+
+---
+
 ## *Installation and Setup*
 
 To run the project locally, follow these steps:
 
 1. Clone this repository:
-   ```bash
+```bash
    git clone https://github.com/Rakeshvenigalla/Istanbul-Shopping-Insights-R.git
-   ```
+```
 2. Navigate to the project directory:
   ```bash
   cd Istanbul-Shopping-Insights-R
@@ -75,3 +94,20 @@ To run the project locally, follow these steps:
   install.packages(c("ggplot2", "dplyr", "caret", "randomForest", "lmtest"))
   ```
 4. Load the dataset and start running the analysis using RStudio or an R environment.
+
+---
+
+## References
+
+1. **Customer Shopping Dataset - Retail Sales Data**. Kaggle. Retrieved from [Kaggle](https://www.kaggle.com/code/mostafaabdelbadie/customer-shopping-dataset-retail-sales-data-eda/input)
+
+2. **About Linear Regression**. IBM. Retrieved from [IBM](https://www.ibm.com/topics/linear-regression#:~:text=Resources-,What%20is%20linear%20regression%3F,is%20called%20the%20independent%20variable.)
+
+3. **Highly Effective Questions are SMART Questions**. Medium. Retrieved from [Medium](https://emkautsar.medium.com/highly-effective-questions-are-smart-questions-59040efea480)
+
+---
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
