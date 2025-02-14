@@ -1,4 +1,4 @@
-# Customer Shopping Dataset Analysis
+# Istanbul Shopping Insights R
 
 ## *Project Overview*
 
