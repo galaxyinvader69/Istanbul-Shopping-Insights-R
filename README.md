@@ -1,4 +1,4 @@
-# Istanbul Shopping Insights R
+# Istanbul Shopping Insights-R
 
 ## *Project Overview*
 
